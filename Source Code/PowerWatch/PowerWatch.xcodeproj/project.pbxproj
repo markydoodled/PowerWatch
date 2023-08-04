@@ -11,7 +11,36 @@
 		D59F92E52A7B09910063AA5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59F92E42A7B09910063AA5E /* ContentView.swift */; };
 		D59F92E72A7B09920063AA5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D59F92E62A7B09920063AA5E /* Assets.xcassets */; };
 		D59F92EA2A7B09920063AA5E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D59F92E92A7B09920063AA5E /* Preview Assets.xcassets */; };
+		D59F92F72A7D65790063AA5E /* PowerWatch_watchOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59F92F62A7D65790063AA5E /* PowerWatch_watchOSApp.swift */; };
+		D59F92F92A7D65790063AA5E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D59F92F82A7D65790063AA5E /* ContentView.swift */; };
+		D59F92FB2A7D657B0063AA5E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D59F92FA2A7D657B0063AA5E /* Assets.xcassets */; };
+		D59F92FE2A7D657B0063AA5E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D59F92FD2A7D657B0063AA5E /* Preview Assets.xcassets */; };
+		D59F93012A7D657B0063AA5E /* PowerWatch watchOS Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = D59F92F42A7D65790063AA5E /* PowerWatch watchOS Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D59F92FF2A7D657B0063AA5E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D59F92D72A7B09910063AA5E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D59F92F32A7D65790063AA5E;
+			remoteInfo = "PowerWatch watchOS Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D59F93052A7D657B0063AA5E /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				D59F93012A7D657B0063AA5E /* PowerWatch watchOS Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D59F92DF2A7B09910063AA5E /* PowerWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PowerWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -19,10 +48,22 @@
 		D59F92E42A7B09910063AA5E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		D59F92E62A7B09920063AA5E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D59F92E92A7B09920063AA5E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		D59F92F42A7D65790063AA5E /* PowerWatch watchOS Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PowerWatch watchOS Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D59F92F62A7D65790063AA5E /* PowerWatch_watchOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PowerWatch_watchOSApp.swift; sourceTree = "<group>"; };
+		D59F92F82A7D65790063AA5E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D59F92FA2A7D657B0063AA5E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		D59F92FD2A7D657B0063AA5E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		D59F92DC2A7B09910063AA5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D59F92F12A7D65790063AA5E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -36,6 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				D59F92E12A7B09910063AA5E /* PowerWatch */,
+				D59F92F52A7D65790063AA5E /* PowerWatch watchOS Watch App */,
 				D59F92E02A7B09910063AA5E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -44,6 +86,7 @@
 			isa = PBXGroup;
 			children = (
 				D59F92DF2A7B09910063AA5E /* PowerWatch.app */,
+				D59F92F42A7D65790063AA5E /* PowerWatch watchOS Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +110,25 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
+		D59F92F52A7D65790063AA5E /* PowerWatch watchOS Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				D59F92F62A7D65790063AA5E /* PowerWatch_watchOSApp.swift */,
+				D59F92F82A7D65790063AA5E /* ContentView.swift */,
+				D59F92FA2A7D657B0063AA5E /* Assets.xcassets */,
+				D59F92FC2A7D657B0063AA5E /* Preview Content */,
+			);
+			path = "PowerWatch watchOS Watch App";
+			sourceTree = "<group>";
+		};
+		D59F92FC2A7D657B0063AA5E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				D59F92FD2A7D657B0063AA5E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -77,14 +139,33 @@
 				D59F92DB2A7B09910063AA5E /* Sources */,
 				D59F92DC2A7B09910063AA5E /* Frameworks */,
 				D59F92DD2A7B09910063AA5E /* Resources */,
+				D59F93052A7D657B0063AA5E /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D59F93002A7D657B0063AA5E /* PBXTargetDependency */,
+			);
+			name = PowerWatch;
+			productName = PowerWatch;
+			productReference = D59F92DF2A7B09910063AA5E /* PowerWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		D59F92F32A7D65790063AA5E /* PowerWatch watchOS Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D59F93022A7D657B0063AA5E /* Build configuration list for PBXNativeTarget "PowerWatch watchOS Watch App" */;
+			buildPhases = (
+				D59F92F02A7D65790063AA5E /* Sources */,
+				D59F92F12A7D65790063AA5E /* Frameworks */,
+				D59F92F22A7D65790063AA5E /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = PowerWatch;
-			productName = PowerWatch;
-			productReference = D59F92DF2A7B09910063AA5E /* PowerWatch.app */;
+			name = "PowerWatch watchOS Watch App";
+			productName = "PowerWatch watchOS Watch App";
+			productReference = D59F92F42A7D65790063AA5E /* PowerWatch watchOS Watch App.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -98,6 +179,9 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					D59F92DE2A7B09910063AA5E = {
+						CreatedOnToolsVersion = 14.3;
+					};
+					D59F92F32A7D65790063AA5E = {
 						CreatedOnToolsVersion = 14.3;
 					};
 				};
@@ -116,6 +200,7 @@
 			projectRoot = "";
 			targets = (
 				D59F92DE2A7B09910063AA5E /* PowerWatch */,
+				D59F92F32A7D65790063AA5E /* PowerWatch watchOS Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -127,6 +212,15 @@
 			files = (
 				D59F92EA2A7B09920063AA5E /* Preview Assets.xcassets in Resources */,
 				D59F92E72A7B09920063AA5E /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D59F92F22A7D65790063AA5E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D59F92FE2A7D657B0063AA5E /* Preview Assets.xcassets in Resources */,
+				D59F92FB2A7D657B0063AA5E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,7 +236,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D59F92F02A7D65790063AA5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D59F92F92A7D65790063AA5E /* ContentView.swift in Sources */,
+				D59F92F72A7D65790063AA5E /* PowerWatch_watchOSApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		D59F93002A7D657B0063AA5E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D59F92F32A7D65790063AA5E /* PowerWatch watchOS Watch App */;
+			targetProxy = D59F92FF2A7D657B0063AA5E /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		D59F92EB2A7B09920063AA5E /* Debug */ = {
@@ -262,6 +373,7 @@
 		D59F92EE2A7B09920063AA5E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -296,6 +408,7 @@
 		D59F92EF2A7B09920063AA5E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -327,6 +440,66 @@
 			};
 			name = Release;
 		};
+		D59F93032A7D657B0063AA5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PowerWatch watchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = ZWASU9HFBU;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "PowerWatch watchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MSJ.PowerWatch;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MSJ.PowerWatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		D59F93042A7D657B0063AA5E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PowerWatch watchOS Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = ZWASU9HFBU;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "PowerWatch watchOS";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.MSJ.PowerWatch;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.MSJ.PowerWatch.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -344,6 +517,15 @@
 			buildConfigurations = (
 				D59F92EE2A7B09920063AA5E /* Debug */,
 				D59F92EF2A7B09920063AA5E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D59F93022A7D657B0063AA5E /* Build configuration list for PBXNativeTarget "PowerWatch watchOS Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D59F93032A7D657B0063AA5E /* Debug */,
+				D59F93042A7D657B0063AA5E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
