@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import WatchConnectivity
 
 struct ContentView: View {
     @State var phonePercentage = 0.0
@@ -121,7 +122,12 @@ struct ContentView: View {
                         }
                         Spacer()
                     }
-                    Divider()
+                }
+            }
+            .navigationTitle("PowerWatch")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
                         let batteryLevel = WKInterfaceDevice.current().batteryLevel
@@ -129,12 +135,11 @@ struct ContentView: View {
                         watchState = batteryState.rawValue
                         watchPercentage = Double(batteryLevel)
                     }) {
-                        Label("Refresh", systemImage: "arrow.clockwise")
+                        Image(systemName: "arrow.clockwise")
                     }
+                    .foregroundStyle(.accent)
                 }
             }
-            .navigationTitle("PowerWatch")
-            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear() {
             WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
