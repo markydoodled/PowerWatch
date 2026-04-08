@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1530"
+   LastUpgradeVersion = "2620"
    wasCreatedForAppExtension = "YES"
    version = "2.0">
    <BuildAction
@@ -75,12 +75,21 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
+            BlueprintIdentifier = "D56746782BB375D600233355"
+            BuildableName = "PowerWatch watchOS WidgetExtension.appex"
+            BlueprintName = "PowerWatch watchOS WidgetExtension"
+            ReferencedContainer = "container:PowerWatch.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
             BlueprintIdentifier = "D59F92DE2A7B09910063AA5E"
             BuildableName = "PowerWatch.app"
             BlueprintName = "PowerWatch"
             ReferencedContainer = "container:PowerWatch.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "_XCWidgetKind"

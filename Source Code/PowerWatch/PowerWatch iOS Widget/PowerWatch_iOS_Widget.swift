@@ -8,84 +8,145 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date())
+private let widgetAppGroup = "group.com.MSJ.PowerWatch.shared"
+
+struct WidgetBatterySnapshot: Decodable {
+    let level: Double
+    let state: Int
+    let updatedAt: Date
+
+    static let empty = WidgetBatterySnapshot(level: 0, state: 0, updatedAt: .distantPast)
+
+    var percentage: Double {
+        max(0, min(level, 1)) * 100
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date())
-        completion(entry)
-    }
-
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-
-        // Generate A Timeline Consisting Of 24 Entries An Hour Apart, Starting From The Current Date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 24 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate)
-            entries.append(entry)
+    var stateText: String {
+        switch state {
+        case 1:
+            return "Unplugged"
+        case 2:
+            return "Charging"
+        case 3:
+            return "Full"
+        default:
+            return "Unknown"
         }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
     }
 }
 
-struct SimpleEntry: TimelineEntry {
+struct BatteryWidgetEntry: TimelineEntry {
     let date: Date
+    let phoneSnapshot: WidgetBatterySnapshot
+    let watchSnapshot: WidgetBatterySnapshot
+}
+
+private enum WidgetSnapshotStore {
+    static func loadSnapshot(for key: String) -> WidgetBatterySnapshot {
+        guard
+            let defaults = UserDefaults(suiteName: widgetAppGroup),
+            let data = defaults.data(forKey: key),
+            let snapshot = try? JSONDecoder().decode(WidgetBatterySnapshot.self, from: data)
+        else {
+            return .empty
+        }
+
+        return snapshot
+    }
+}
+
+struct Provider: TimelineProvider {
+    func placeholder(in context: Context) -> BatteryWidgetEntry {
+        BatteryWidgetEntry(date: Date(), phoneSnapshot: .empty, watchSnapshot: .empty)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (BatteryWidgetEntry) -> Void) {
+        completion(entry())
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<BatteryWidgetEntry>) -> Void) {
+        let currentEntry = entry()
+        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
+        completion(Timeline(entries: [currentEntry], policy: .after(nextRefresh)))
+    }
+
+    private func entry() -> BatteryWidgetEntry {
+        BatteryWidgetEntry(
+            date: Date(),
+            phoneSnapshot: WidgetSnapshotStore.loadSnapshot(for: "phoneSnapshot"),
+            watchSnapshot: WidgetSnapshotStore.loadSnapshot(for: "watchSnapshot")
+        )
+    }
+}
+
+private struct BatteryGaugeView: View {
+    let systemImage: String
+    let value: Double
+
+    var body: some View {
+        Gauge(value: value, in: 0...100) {
+            Image(systemName: systemImage)
+        } currentValueLabel: {
+            Text("\(Int(value.rounded()))")
+        }
+        .gaugeStyle(.accessoryCircular)
+    }
+}
+
+private struct SmallBatteryWidgetView: View {
+    let title: String
+    let systemImage: String
+    let snapshot: WidgetBatterySnapshot
+
+    var body: some View {
+        ZStack {
+            Rectangle()
+                .foregroundStyle(.clear)
+                .scaledToFill()
+            VStack(spacing: 6) {
+                Label(title, systemImage: systemImage)
+                    .bold()
+                    .foregroundStyle(.white)
+                    .font(.title2)
+                Text("\(snapshot.percentage, specifier: "%.0f")%")
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                Text(snapshot.stateText)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.9))
+            }
+            .padding(8)
+        }
+    }
 }
 
 struct PowerWatch_iOS_WidgetEntryView_Phone: View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var widgetFamily
-    @State var batteryLevel = 100.0
+
     var body: some View {
+        batteryView(title: "iPhone", systemImage: "iphone", snapshot: entry.phoneSnapshot)
+    }
+
+    @ViewBuilder
+    private func batteryView(title: String, systemImage: String, snapshot: WidgetBatterySnapshot) -> some View {
         switch widgetFamily {
         case .systemSmall:
-            ZStack {
-                Rectangle()
-                    .foregroundStyle(.accent)
-                    .scaledToFill()
-                VStack {
-                    Label("iPhone", systemImage: "iphone")
-                        .bold()
-                        .foregroundStyle(.white)
-                        .font(.title2)
-                    Text("\(batteryLevel)%")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                }
-            }
-        case .systemMedium:
-            Text("N/A")
-        case .systemLarge:
-            Text("N/A")
-        case .systemExtraLarge:
-            Text("N/A")
-        case .accessoryCorner:
-            Text("N/A")
+            SmallBatteryWidgetView(title: title, systemImage: systemImage, snapshot: snapshot)
         case .accessoryCircular:
-            ZStack {
-                AccessoryWidgetBackground()
-                Gauge(value: batteryLevel, in: 0...100) {
-                    Image(systemName: "iphone")
-                } currentValueLabel: {
-                    Text("\(batteryLevel)")
-                }
-                .gaugeStyle(.accessoryCircular)
-            }
+            BatteryGaugeView(systemImage: systemImage, value: snapshot.percentage)
         case .accessoryRectangular:
-            VStack {
-                Label("iPhone", systemImage: "iphone")
-                Text("\(batteryLevel)%")
+            VStack(alignment: .leading) {
+                Label(title, systemImage: systemImage)
+                Text("\(snapshot.percentage, specifier: "%.0f")%")
+                Text(snapshot.stateText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
         case .accessoryInline:
-            Label("iPhone - \(batteryLevel)%", systemImage: "iphone")
-        @unknown default:
-            Text("Unknown")
+            Label("\(title) \(snapshot.percentage, specifier: "%.0f")%", systemImage: systemImage)
+        default:
+            Text("N/A")
         }
     }
 }
@@ -93,51 +154,30 @@ struct PowerWatch_iOS_WidgetEntryView_Phone: View {
 struct PowerWatch_iOS_WidgetEntryView_Watch: View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var widgetFamily
-    @State var batteryLevel = 100.0
+
     var body: some View {
+        batteryView(title: "Watch", systemImage: "applewatch", snapshot: entry.watchSnapshot)
+    }
+
+    @ViewBuilder
+    private func batteryView(title: String, systemImage: String, snapshot: WidgetBatterySnapshot) -> some View {
         switch widgetFamily {
         case .systemSmall:
-            ZStack {
-                Rectangle()
-                    .foregroundStyle(.accent)
-                    .scaledToFill()
-                VStack {
-                    Label("Watch", systemImage: "applewatch")
-                        .bold()
-                        .foregroundStyle(.white)
-                        .font(.title2)
-                    Text("\(batteryLevel)%")
-                        .font(.title3)
-                        .foregroundStyle(.white)
-                }
-            }
-        case .systemMedium:
-            Text("N/A")
-        case .systemLarge:
-            Text("N/A")
-        case .systemExtraLarge:
-            Text("N/A")
-        case .accessoryCorner:
-            Text("N/A")
+            SmallBatteryWidgetView(title: title, systemImage: systemImage, snapshot: snapshot)
         case .accessoryCircular:
-            ZStack {
-                AccessoryWidgetBackground()
-                Gauge(value: batteryLevel, in: 0...100) {
-                    Image(systemName: "applewatch")
-                } currentValueLabel: {
-                    Text("\(batteryLevel)")
-                }
-                .gaugeStyle(.accessoryCircular)
-            }
+            BatteryGaugeView(systemImage: systemImage, value: snapshot.percentage)
         case .accessoryRectangular:
-            VStack {
-                Label("Apple Watch", systemImage: "applewatch")
-                Text("\(batteryLevel)%")
+            VStack(alignment: .leading) {
+                Label("Apple Watch", systemImage: systemImage)
+                Text("\(snapshot.percentage, specifier: "%.0f")%")
+                Text(snapshot.stateText)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
             }
         case .accessoryInline:
-            Label("Watch - \(batteryLevel)%", systemImage: "applewatch")
-        @unknown default:
-            Text("Unknown")
+            Label("Watch \(snapshot.percentage, specifier: "%.0f")%", systemImage: systemImage)
+        default:
+            Text("N/A")
         }
     }
 }
@@ -151,7 +191,7 @@ struct PowerWatch_iOS_Widget_Phone: Widget {
                 .containerBackground(.accent, for: .widget)
         }
         .configurationDisplayName("iPhone Battery Level")
-        .description("Current Battery Level For iPhone.")
+        .description("Current battery level for iPhone.")
         .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryInline, .accessoryRectangular])
     }
 }
@@ -165,7 +205,7 @@ struct PowerWatch_iOS_Widget_Watch: Widget {
                 .containerBackground(.accent, for: .widget)
         }
         .configurationDisplayName("Apple Watch Battery Level")
-        .description("Current Battery Level For Apple Watch.")
+        .description("Latest synced battery level for Apple Watch.")
         .supportedFamilies([.systemSmall, .accessoryCircular, .accessoryInline, .accessoryRectangular])
     }
 }

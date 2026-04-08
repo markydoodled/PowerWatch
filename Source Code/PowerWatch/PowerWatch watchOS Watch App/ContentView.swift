@@ -6,13 +6,15 @@
 //
 
 import SwiftUI
-import WatchConnectivity
 
 struct ContentView: View {
-    @State var phonePercentage = 0.0
-    @State var phoneState = 0
-    @State var watchPercentage = 0.0
-    @State var watchState = 0
+    @EnvironmentObject var sessionManager: WatchSessionManager
+
+    private var phonePercentage: Double { sessionManager.phoneSnapshot.level }
+    private var phoneState: Int { sessionManager.phoneSnapshot.state }
+    private var watchPercentage: Double { sessionManager.watchSnapshot.level }
+    private var watchState: Int { sessionManager.watchSnapshot.state }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -24,20 +26,18 @@ struct ContentView: View {
                             Label("iPhone", systemImage: "iphone")
                                 .bold()
                             Group {
-                                if phonePercentage >= 21 {
-                                    Text("\(String(stringLiteral: phonePercentage.formatted()))%")
+                                if (phonePercentage * 100) >= 21 {
+                                    Text("\((phonePercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.green)
-                                }
-                                if phonePercentage >= 11 {
-                                    Text("\(String(stringLiteral: phonePercentage.formatted()))%")
+                                } else if (phonePercentage * 100) >= 11 {
+                                    Text("\((phonePercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.orange)
-                                }
-                                if phonePercentage <= 10 {
-                                    Text("\(String(stringLiteral: phonePercentage.formatted()))%")
+                                } else if (phonePercentage * 100) <= 10 {
+                                    Text("\((phonePercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.red)
@@ -52,12 +52,12 @@ struct ContentView: View {
                                 if phoneState == 2 {
                                     Text("Charging")
                                         .bold()
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(.green)
                                 }
                                 if phoneState == 3 {
                                     Text("Full")
                                         .bold()
-                                        .foregroundColor(.green)
+                                        .foregroundColor(.accentColor)
                                 }
                                 if phoneState == 0 {
                                     Text("Unknown")
@@ -77,20 +77,18 @@ struct ContentView: View {
                             Label("Apple Watch", systemImage: "applewatch")
                                 .bold()
                             Group {
-                                if watchPercentage >= 21 {
-                                    Text("\(String(stringLiteral: watchPercentage.formatted()))%")
+                                if (watchPercentage * 100) >= 21 {
+                                    Text("\((watchPercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.green)
-                                }
-                                if watchPercentage >= 11 {
-                                    Text("\(String(stringLiteral: watchPercentage.formatted()))%")
+                                } else if (watchPercentage * 100) >= 11 {
+                                    Text("\((watchPercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.orange)
-                                }
-                                if watchPercentage <= 10 {
-                                    Text("\(String(stringLiteral: watchPercentage.formatted()))%")
+                                } else if (watchPercentage * 100) <= 10 {
+                                    Text("\((watchPercentage * 100), specifier: "%.0f")%")
                                         .bold()
                                         .font(.title2)
                                         .foregroundColor(.red)
@@ -105,12 +103,12 @@ struct ContentView: View {
                                 if watchState == 2 {
                                     Text("Charging")
                                         .bold()
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(.green)
                                 }
                                 if watchState == 3 {
                                     Text("Full")
                                         .bold()
-                                        .foregroundColor(.green)
+                                        .foregroundColor(.accentColor)
                                 }
                                 if watchState == 0 {
                                     Text("Unknown")
@@ -129,30 +127,20 @@ struct ContentView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
-                        let batteryLevel = WKInterfaceDevice.current().batteryLevel
-                        let batteryState = WKInterfaceDevice.current().batteryState
-                        watchState = batteryState.rawValue
-                        watchPercentage = Double(batteryLevel)
+                        sessionManager.refreshAll()
                     }) {
                         Image(systemName: "arrow.clockwise")
                     }
-                    .foregroundStyle(.accent)
                 }
             }
         }
-        .onAppear() {
-            WKInterfaceDevice.current().isBatteryMonitoringEnabled = true
-            let batteryLevel = WKInterfaceDevice.current().batteryLevel
-            let batteryState = WKInterfaceDevice.current().batteryState
-            watchState = batteryState.rawValue
-            watchPercentage = Double(batteryLevel)
+        .onAppear {
+            sessionManager.refreshAll()
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
+#Preview {
+    ContentView()
+        .environmentObject(WatchSessionManager.shared)
 }

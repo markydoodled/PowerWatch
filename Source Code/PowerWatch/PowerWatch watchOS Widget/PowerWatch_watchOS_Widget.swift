@@ -8,66 +8,116 @@
 import WidgetKit
 import SwiftUI
 
-struct Provider: TimelineProvider {
-    func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date())
-    }
+private let complicationAppGroup = "group.com.MSJ.PowerWatch.shared"
 
-    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date())
-        completion(entry)
-    }
+struct ComplicationBatterySnapshot: Decodable {
+    let level: Double
+    let state: Int
+    let updatedAt: Date
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
+    static let empty = ComplicationBatterySnapshot(level: 0, state: 0, updatedAt: .distantPast)
 
-        // Generate A Timeline Consisting Of 24 Entries An Hour Apart, Starting From The Current Date.
-        let currentDate = Date()
-        for hourOffset in 0 ..< 24 {
-            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-            let entry = SimpleEntry(date: entryDate)
-            entries.append(entry)
-        }
-
-        let timeline = Timeline(entries: entries, policy: .atEnd)
-        completion(timeline)
+    var percentage: Double {
+        max(0, min(level, 1)) * 100
     }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
+    let phoneSnapshot: ComplicationBatterySnapshot
+    let watchSnapshot: ComplicationBatterySnapshot
+}
+
+private enum ComplicationSnapshotStore {
+    static func loadSnapshot(for key: String) -> ComplicationBatterySnapshot {
+        guard
+            let defaults = UserDefaults(suiteName: complicationAppGroup),
+            let data = defaults.data(forKey: key),
+            let snapshot = try? JSONDecoder().decode(ComplicationBatterySnapshot.self, from: data)
+        else {
+            return .empty
+        }
+
+        return snapshot
+    }
+}
+
+struct Provider: TimelineProvider {
+    func placeholder(in context: Context) -> SimpleEntry {
+        SimpleEntry(date: Date(), phoneSnapshot: .empty, watchSnapshot: .empty)
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> Void) {
+        completion(entry())
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
+        let currentEntry = entry()
+        let nextRefresh = Calendar.current.date(byAdding: .minute, value: 30, to: Date()) ?? Date().addingTimeInterval(1800)
+        completion(Timeline(entries: [currentEntry], policy: .after(nextRefresh)))
+    }
+
+    private func entry() -> SimpleEntry {
+        SimpleEntry(
+            date: Date(),
+            phoneSnapshot: ComplicationSnapshotStore.loadSnapshot(for: "phoneSnapshot"),
+            watchSnapshot: ComplicationSnapshotStore.loadSnapshot(for: "watchSnapshot")
+        )
+    }
+}
+
+private struct CircularBatteryView: View {
+    let systemImage: String
+    let percentage: Double
+    let gradient = Gradient(colors: [.red, .orange, .yellow, .green])
+
+    var body: some View {
+        Gauge(value: percentage, in: 0...100) {
+            Image(systemName: systemImage)
+        } currentValueLabel: {
+            Text("\(Int(percentage.rounded()))")
+        }
+        .gaugeStyle(.circular)
+    }
+}
+
+private struct CornerBatteryView: View {
+    let systemImage: String
+    let percentage: Double
+    let gradient = Gradient(colors: [.red, .orange, .yellow, .green])
+
+    var body: some View {
+        Gauge(value: percentage, in: 0...100) {
+            Image(systemName: systemImage)
+        }
+        .gaugeStyle(.accessoryCircularCapacity)
+    }
 }
 
 struct PowerWatch_watchOS_WidgetEntryView_Phone: View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var widgetFamily
-    @State var batteryLevel = 100.0
+
     var body: some View {
+        complicationView(title: "iPhone", systemImage: "iphone", snapshot: entry.phoneSnapshot)
+    }
+
+    @ViewBuilder
+    private func complicationView(title: String, systemImage: String, snapshot: ComplicationBatterySnapshot) -> some View {
         switch widgetFamily {
-        case .systemSmall:
-            Text("N/A")
-        case .systemMedium:
-            Text("N/A")
-        case .systemLarge:
-            Text("N/A")
-        case .systemExtraLarge:
-            Text("N/A")
         case .accessoryCorner:
-            VStack {
-                
-            }
+            CornerBatteryView(systemImage: systemImage, percentage: snapshot.percentage)
         case .accessoryCircular:
-            ZStack {
-                
-            }
+            CircularBatteryView(systemImage: systemImage, percentage: snapshot.percentage)
         case .accessoryRectangular:
-            VStack {
-                
+            VStack(alignment: .leading) {
+                Label(title, systemImage: systemImage)
+                Text("\(snapshot.percentage, specifier: "%.0f")%")
             }
         case .accessoryInline:
-            Label("iPhone - ", systemImage: "iphone")
-        @unknown default:
-            Text("Unknown")
+            Label("iPhone \(snapshot.percentage, specifier: "%.0f")%", systemImage: systemImage)
+        default:
+            Text("N/A")
         }
     }
 }
@@ -75,33 +125,27 @@ struct PowerWatch_watchOS_WidgetEntryView_Phone: View {
 struct PowerWatch_watchOS_WidgetEntryView_Watch: View {
     var entry: Provider.Entry
     @Environment(\.widgetFamily) var widgetFamily
-    @State var batteryLevel = 100.0
+
     var body: some View {
+        complicationView(title: "Watch", systemImage: "applewatch", snapshot: entry.watchSnapshot)
+    }
+
+    @ViewBuilder
+    private func complicationView(title: String, systemImage: String, snapshot: ComplicationBatterySnapshot) -> some View {
         switch widgetFamily {
-        case .systemSmall:
-            Text("N/A")
-        case .systemMedium:
-            Text("N/A")
-        case .systemLarge:
-            Text("N/A")
-        case .systemExtraLarge:
-            Text("N/A")
         case .accessoryCorner:
-            VStack {
-                
-            }
+            CornerBatteryView(systemImage: systemImage, percentage: snapshot.percentage)
         case .accessoryCircular:
-            ZStack {
-                
-            }
+            CircularBatteryView(systemImage: systemImage, percentage: snapshot.percentage)
         case .accessoryRectangular:
-            VStack {
-                
+            VStack(alignment: .leading) {
+                Label(title, systemImage: systemImage)
+                Text("\(snapshot.percentage, specifier: "%.0f")%")
             }
         case .accessoryInline:
-            Label("Apple Watch", systemImage: "applewatch")
-        @unknown default:
-            Text("Unknown")
+            Label("Watch \(snapshot.percentage, specifier: "%.0f")%", systemImage: systemImage)
+        default:
+            Text("N/A")
         }
     }
 }
@@ -115,7 +159,7 @@ struct PowerWatch_watchOS_Widget_Phone: Widget {
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("iPhone Battery Level")
-        .description("Current Battery Level For iPhone.")
+        .description("Latest synced battery level for iPhone.")
         .supportedFamilies([.accessoryCircular, .accessoryCorner, .accessoryInline, .accessoryRectangular])
     }
 }
@@ -129,7 +173,7 @@ struct PowerWatch_watchOS_Widget_Watch: Widget {
                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Apple Watch Battery Level")
-        .description("Current Battery Level For Apple Watch.")
+        .description("Current battery level for Apple Watch.")
         .supportedFamilies([.accessoryCircular, .accessoryCorner, .accessoryInline, .accessoryRectangular])
     }
 }
